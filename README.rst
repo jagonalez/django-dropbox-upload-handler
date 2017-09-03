@@ -41,6 +41,7 @@ Add DropboxFileUploadHandler to the default Upload Handlers:
 To Enable DropboxFileUploadHandler within a single view:
 
 forms.py
+
 .. code-block:: python
 
     from django import forms
@@ -51,6 +52,7 @@ forms.py
 
 
 views.py
+
 .. code-block:: python
 
     from django.http import HttpResponseRedirect
