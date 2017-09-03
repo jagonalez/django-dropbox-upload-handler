@@ -33,7 +33,7 @@ class DropboxFileUploadHandler(FileUploadHandler):
 
     def new_file(self, *args, **kwargs):
         super(DropboxFileUploadHandler, self).new_file(*args, **kwargs)
-        upload_path = getattr(settings.DROPBOX_UPLOAD_HANDLER, 'UPLOAD_PATH', '/')
+        upload_path = settings.DROPBOX_UPLOAD_HANDLER.get('UPLOAD_PATH', '/')
         if upload_path[0] != '/':
             upload_path = '/' + upload_path
         if upload_path[-1] != '/':
