@@ -13,7 +13,9 @@ DROPBOX_UPLOAD_HANDLER = {
 
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = "wwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwww"
-
+FILE_UPLOAD_HANDLERS = [
+    'djdango_dropbox_upload_handler.handler.DropboxFileUploadHandler'
+]
 DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.sqlite3",
