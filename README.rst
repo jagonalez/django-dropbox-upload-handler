@@ -13,11 +13,6 @@ Django Dropbox Upload Handler
 
 Transfer Uploaded Files to Dropbox
 
-Documentation
--------------
-
-The full documentation is at https://django-dropbox-upload-handler.readthedocs.io.
-
 Quickstart
 ----------
 
@@ -35,6 +30,48 @@ Add it to your `INSTALLED_APPS`:
         ...
     )
 
+Add DropboxFileUploadHandler to the default Upload Handlers:
+
+.. code-block:: python
+
+    FILE_UPLOAD_HANDLERS = [
+        'django_dropbox_upload_handler.handler.DropboxFileUploadHandler'
+    ]
+
+To Enable DropboxFileUploadHandler within a single view:
+
+forms.py
+.. code-block:: python
+
+    from django import forms
+
+    class UploadFileForm(forms.Form):
+      title = forms.CharField(max_length=50)
+      file = forms.FileField()
+
+
+views.py
+.. code-block:: python
+
+    from django.http import HttpResponseRedirect
+    from django.shortcuts import render
+    from .forms import UploadFileForm
+
+    # Imaginary function to handle the uploaded file dropbox file.
+    from somewhere import handle_uploaded_file
+
+    def upload_file(request):
+        if request.method == 'POST':
+            self.request.upload_handlers.insert(0, DropboxFileUploadHandler(request))
+            form = UploadFileForm(request.POST, request.FILES)
+            if form.is_valid():
+                handle_uploaded_file(request.FILES['file'])
+                return HttpResponseRedirect('/success/url/')
+        else:
+            form = UploadFileForm()
+        return render(request, 'upload.html', {'form': form})
+
+
 Add Django Dropbox Upload Handler's URL patterns:
 
 .. code-block:: python
@@ -48,10 +85,56 @@ Add Django Dropbox Upload Handler's URL patterns:
         ...
     ]
 
+Checking upload progress for API:
+
+When submitting the file include the parameter progres_id in the URL. ex:
+
+.. code-block:: javascript
+
+    function getUUID() {
+      let uuid = ""
+      for (let i=0; i < 32; i++) {
+        uuid += Math.floor(Math.random() * 16).toString(16);
+      }
+      return uuid
+    }
+
+    function upload(file) {
+      let data = new FormData()
+      data.append('file', file)
+      fetch('/path/to/upload?progress_id=' + getUUID(), {
+        method: "post",
+        body: data
+      })
+      .then(response => {
+        //...
+      })
+      checkProgress(0, progressId, file.size)
+    }
+
+    function checkProgress(progressId, size) {
+      fetch('/upload_progress?progress_id=' = progiressId)
+      .then(response => {
+        if (r.status === 201)
+          return {done: 'true'}
+        return response.json()
+      })
+      .then(data => {
+        if (data.done) {
+          //..upload is completed
+        } else {
+          //.. still uploading - progress can be checked using:
+          progress = Math.round(parseInt(data.uploaded) / parseInt(data.length) * 100)
+          setTimeout(() => { checkProgress( progressId, size) }, 500)
+        }
+      })
+    }
+
 Features
 --------
 
-* TODO
+* Transfers files uploaded through Django to Dropbox
+* Includes a upload_progress view for ajax calls
 
 Running Tests
 -------------
