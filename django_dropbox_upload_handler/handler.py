@@ -33,7 +33,13 @@ class DropboxFileUploadHandler(FileUploadHandler):
 
     def new_file(self, *args, **kwargs):
         super(DropboxFileUploadHandler, self).new_file(*args, **kwargs)
-        self.upload_path = settings.DROPBOX_UPLOAD_HANDLER['UPLOAD_PATH'] + self.file_name
+        upload_path = getattr(settings.DROPBOX_UPLOAD_HANDLER, 'UPLOAD_PATH', '/')
+        if upload_path[0] != '/':
+            upload_path = '/' + upload_path
+        if upload_path[-1] != '/':
+            upload_path = upload_path + '/'
+
+        self.upload_path = upload_path + self.file_name
         self.count = 0
 
     def receive_data_chunk(self, raw_data, start):
